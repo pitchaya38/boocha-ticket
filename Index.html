@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <!-- ดึงฟอนต์จาก Google Fonts (เลือกแบบที่ชอบไปใช้ใน Step 2) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Kanit:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <title>ซื้อตั๋ว Boocha</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --purple-dark: #3C3489;
+      --purple-mid: #534AB7;
+      --purple-light: #EEEDFE;
+      --purple-text: #26215C;
+      --gray-bg: #F5F5F5;
+      --white: #FFFFFF;
+      --border: #E0DDF5;
+      --text: #2C2C2A;
+      --muted: #888780;
+      --success: #0F6E56;
+      --success-bg: #E1F5EE;
+
+    }
+
+    body {
+      background-image: url('https://img1.pic.in.th/images/11e29b101de0e4f1a8.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(rgba(245, 245, 245, 0.85), rgba(245, 245, 245, 0.85));
+      color: #1e4fdc;
+      padding: 32px 16px 24px;
+      /* เพิ่มพื้นที่หายใจด้านบน-ล่างให้ดูหรูหราขึ้น */
+      text-align: center;
+      font-family: 'Anuphan', sans-serif;
+    }
+
+    /* 1. กล่องจัดวางตำแหน่งโลโก้ให้อยู่กึ่งกลางพอดี */
+    .logo-container {
+  width: 100%;
+  max-width: 260px;   /* 👈 ปรับเพิ่มตัวเลขตรงนี้เพื่อขยายขนาดช่องภาพให้ใหญ่ขึ้นตามใจชอบ */
+  margin: 0 auto 16px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-logo {
+  width: 100%;
+  height: auto;
+  object-fit: contain; 
+  display: block;
+}
+
+    .header-title {
+      font-size: 44px;
+      /* ปรับลดจาก 60px ลงมาเล็กน้อย เพื่อให้บาลานซ์กับขนาดโลโก้ ไม่แย่งซีนกันเอง */
+      font-weight: 600;
+      letter-spacing: 20px;
+      /* เพิ่มช่องไฟให้คำว่า TICKET ดูโมเดิร์น สไตล์สากล */
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .header-sub {
+      font-size: 13px;
+      color: #1e4fdc;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+  
+    .content {
+      padding: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .bank-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .bank-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--purple-light);
+      color: #0d0d0d;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .bank-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .bank-logo {
+      width: 48px;
+      /* ปรับความกว้างของกล่องโลโก้ */
+      height: 48px;
+      /* ปรับความสูงของกล่องโลโก้ */
+      border-radius: 10px;
+      /* ทำขอบมนให้เข้ากับธีมกล่องธนาคาร */
+      overflow: hidden;
+      /* บังคับให้มุมรูปภาพมนตามขอบกล่อง ไม่ทะลุออกมา */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      /* ป้องกันไม่ให้โลโก้โดนบีบแบนบนจอมือถือ */
+    }
+
+    /* ควบคุมรูปภาพโลโก้ธนาคารด้านในให้เต็มกล่องพอดี */
+    .bank-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* ขยายภาพให้เต็มพื้นที่กล่องสี่เหลี่ยมพอดีโดยไม่เสียสัดส่วน */
+      display: block;
+    }
+
+    .bank-name {
+      font-size: 18px;
+      color: var(--purple-dark);
+    }
+
+    .bank-acc {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--purple-dark);
+      letter-spacing: 2px;
+    }
+
+    .bank-holder {
+      font-size: 18px;
+      color: var(--purple-dark);
+      margin-top: 6px;
+      margin-bottom: 12px;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--purple-mid);
+      color: var(--purple-mid);
+      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      transition: background 0.15s;
+      margin-bottom: 16px;
+    }
+
+    .copy-btn:active {
+      background: var(--purple-light);
+    }
+
+    .copy-btn.copied {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 20px;
+
+      /* --- เพิ่มโค้ดส่วนนี้เพื่อทำพื้นหลัง --- */
+      background: var(--white);
+      /* ใส่พื้นหลังสีขาว */
+      border: 1px solid var(--border);
+      /* ใส่เส้นขอบสีโปร่งแสง */
+      border-radius: 12px;
+      /* ปรับขอบให้มน */
+      padding: 16px;
+      /* เพิ่มระยะห่างระหว่างขอบกล่องกับเว้นวรรคข้างใน */
+    }
+
+    .field-wrap {
+      position: relative;
+    }
+
+    input,
+    select {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      -webkit-appearance: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--purple-mid);
+      box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.12);
+    }
+
+    input::placeholder {
+      color: #B4B2A9;
+    }
+
+    .note {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+
+      /* --- เพิ่มโค้ดส่วนนี้เพื่อทำพื้นหลังสีขาว --- */
+      background: var(--white);
+      /* ใส่พื้นหลังสีขาว */
+      border: 1px solid var(--border);
+      /* เส้นขอบสีโปร่งแสง */
+      border-radius: 10px;
+      /* ปรับขอบกล่องให้มน */
+      padding: 12px 16px;
+      /* เพิ่มระยะห่างเว้นวรรคด้านในกล่อง */
+    }
+
+    .field-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #211f1f;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .required {
+      color: #D85A30;
+    }
+
+    .upload-area {
+      background: var(--white);
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+
+    .upload-area.has-file {
+      border-style: solid;
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+    }
+
+    .upload-icon {
+      font-size: 36px;
+      color: var(--purple-mid);
+      margin-bottom: 8px;
+    }
+
+    .upload-icon.success {
+      color: var(--success);
+    }
+
+    .upload-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .upload-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .preview-img {
+      max-width: 100%;
+      max-height: 160px;
+      border-radius: 8px;
+      margin-top: 12px;
+      object-fit: contain;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: #1E4FDC;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .submit-btn:active {
+      background: #26215C;
+      transform: scale(0.98);
+    }
+
+    .submit-btn:disabled {
+      background: var(--muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .note {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--purple-dark);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: transform 0.3s ease;
+      z-index: 999;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success {
+      background: var(--success);
+    }
+
+    .toast.error {
+      background: #A32D2D;
+    }
+
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .success-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--success-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 40px;
+      color: var(--success);
+    }
+
+    .success-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--success);
+      margin-bottom: 8px;
+    }
+
+    .success-msg {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .section {
+      margin-bottom: 20px;
+
+      /* --- เพิ่มโค้ดส่วนนี้เพื่อทำพื้นหลังสีขาว --- */
+      background: var(--white);
+      /* ใส่พื้นหลังสีขาว */
+      border: 1px solid var(--border);
+      /* เส้นขอบสีโปร่งแสง */
+      border-radius: 12px;
+      /* ปรับขอบกล่องให้มน */
+      padding: 16px;
+      /* เพิ่มระยะห่างรอบตัวอักษรและกล่องอัปโหลดด้านใน */
+    }
+
+    @media (min-width: 480px) {
+      .content {
+        padding: 20px;
+      }
+
+      .bank-acc {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <img src="https://img2.pic.in.th/-ALTERNATE-LOGO_Col1Main.th.png"
+       alt="Logo"
+       style="max-width: 140px; width: 100%; height: auto; margin-bottom: 20px; border-radius: 8px; ">
+    <div class="header-title">TICKET</div>
+    <div class="header-sub">กรุณากรอกข้อมูลให้ครบถ้วนเพื่อยืนยันการสั่งซื้อ</div>
+  </div>
+
+
+  <div class="content">
+
+    <div id="form-view">
+
+      <div class="bank-card">
+        <div class="bank-tag">บัญชีที่ชำระ</div>
+        <div class="bank-row">
+          <div class="bank-logo">
+            <img src="https://img1.pic.in.th/images/downloadc22f801fef7ad6c0.th.png">
+
+          </div>
+          <div>
+            <div class="bank-name">ธนาคารกสิกรไทย</div>
+          </div>
+        </div>
+        <div class="bank-acc" id="acc-number">123-4-56789-0</div>
+        <div class="bank-holder">หจก. มินลิตา 635 จำกัด</div>
+
+        <button class="copy-btn" onclick="copyAccount()" id="copy-btn">
+        คัดลอกเลขบัญชี
+      </button>
+
+        <div>
+          <div class="field-label">เลือกตั๋ว <span class="required">*</span></div>
+          <div class="field-wrap">
+            <select id="ticketType" required>
+            <option value="" disabled selected>- กรุณาเลือกประเภทตั๋ว -</option>
+            <option value="Boocha Birthday Party">Boocha Birthday Party (฿699.00)</option>
+          </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div>
+          <div class="field-label">ชื่อ - นามสกุล <span class="required"></span></div>
+          <div class="field-wrap">
+            <input type="text" id="fullName" placeholder="กรุณากรอกข้อมูล" required>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">อีเมล <span class="required">*</span></div>
+          <div class="field-wrap">
+            <input type="email" id="email" placeholder="example@email.com" required>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">เบอร์ติดต่อ <span class="required">*</span></div>
+          <div class="field-wrap">
+            <input type="tel" id="phone" placeholder="08X-XXX-XXXX" pattern="[0-9]{9,10}" required>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <div class="field-label">วันที่โอนเงิน <span class="required">*</span></div>
+            <div class="field-wrap">
+              <input type="date" id="transferDate" required>
+            </div>
+          </div>
+          <div style="flex: 1;">
+            <div class="field-label">เวลาที่โอนเงิน <span class="required">*</span></div>
+            <div class="field-wrap">
+              <input type="time" id="transferTime" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="field-label">แนบหลักฐานการชำระเงิน <span class="required">*</span></div>
+        <div class="upload-area" id="upload-area">
+          <input type="file" id="slip-input" accept="image/*" onchange="handleFile(this)">
+          <div id="upload-content">
+            <div class="upload-icon">☁️</div>
+            <div class="upload-text">แตะเพื่ออัพโหลดสลิปโอนเงิน</div>
+            <div class="upload-sub">รองรับ JPG, PNG ขนาดไม่เกิน 5MB</div>
+          </div>
+          <img id="preview-img" class="preview-img" style="display:none" alt="Slip Preview">
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+      <span>ยืนยันการจอง</span>
+    </button>
+      <div class="note">ข้อมูลของท่านจะถูกเก็บรักษาอย่างปลอดภัย<br>ระบบจะส่งอีเมลยืนยันหลังจากตรวจสอบการชำระเงิน</div>
+
+    </div>
+
+    <div id="success-view" class="success-screen">
+      <div class="success-circle">✅</div>
+      <div class="success-title">ส่งข้อมูลสำเร็จ!</div>
+      <div class="success-msg" id="success-msg">
+        ขอบคุณสำหรับการสั่งซื้อ<br>ระบบจะส่งอีเมลยืนยันให้ท่าน<br>ภายใน 24 ชั่วโมง
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ======================================================
+    // ใส่ URL ของ Apps Script ที่ Deploy แล้วตรงนี้
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
+    // ======================================================
+
+    let slipBase64 = null;
+    let slipName = null;
+
+    function copyAccount() {
+      const acc = document.getElementById("acc-number").textContent.replace(/-/g, "");
+      navigator.clipboard.writeText(acc).then(() => {
+        const btn = document.getElementById("copy-btn");
+        btn.textContent = "✓ คัดลอกแล้ว";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "📋 คัดลอกเลขบัญชี";
+          btn.classList.remove("copied");
+        }, 2000);
+      });
+    }
+
+    function handleFile(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("ไฟล์ใหญ่เกิน 5MB กรุณาเลือกไฟล์ใหม่", "error");
+        return;
+      }
+
+      slipName = file.name;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        slipBase64 = e.target.result;
+        const area = document.getElementById("upload-area");
+        const preview = document.getElementById("preview-img");
+        const content = document.getElementById("upload-content");
+
+        area.classList.add("has-file");
+        preview.src = slipBase64;
+        preview.style.display = "block";
+        content.querySelector(".upload-icon").textContent = "✅";
+        content.querySelector(".upload-icon").classList.add("success");
+        content.querySelector(".upload-text").textContent = file.name;
+        content.querySelector(".upload-sub").textContent = (file.size / 1024).toFixed(0) + " KB";
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function validateForm() {
+      const ticketType = document.getElementById("ticketType").value;
+      const name = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const transferDate = document.getElementById("transferDate").value;
+      const transferTime = document.getElementById("transferTime").value;
+
+      if (!ticketType) { showToast("กรุณาเลือกประเภทตั๋ว", "error"); return false; }
+      if (!name) { showToast("กรุณากรอกชื่อ-นามสกุล", "error"); return false; }
+      if (!email || !email.includes("@")) { showToast("กรุณากรอกอีเมลให้ถูกต้อง", "error"); return false; }
+      if (!phone || phone.length < 9) { showToast("กรุณากรอกเบอร์โทรให้ถูกต้อง", "error"); return false; }
+      if (!transferDate) { showToast("กรุณาเลือกวันที่โอนเงิน", "error"); return false; }
+      if (!transferTime) { showToast("กรุณาระบุเวลาที่โอนเงิน", "error"); return false; }
+      if (!slipBase64) { showToast("กรุณาอัพโหลดสลิปการชำระเงิน", "error"); return false; }
+
+      return true;
+    }
+
+    function submitForm() {
+      if (!validateForm()) return;
+
+      const btn = document.getElementById("submit-btn");
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> กำลังส่งข้อมูล...';
+
+      const data = {
+        ticketType: document.getElementById("ticketType").value,
+        fullName: document.getElementById("fullName").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        transferDate: document.getElementById("transferDate").value,
+        transferTime: document.getElementById("transferTime").value,
+        slipBase64: slipBase64,
+        slipName: slipName
+      };
+
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+        .then(function(response) { return response.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById("form-view").style.display = "none";
+            const sv = document.getElementById("success-view");
+            sv.style.display = "block";
+            document.getElementById("success-msg").innerHTML =
+              res.message.replace(/ /g, "<br>") +
+              "<br><br>กรุณาตรวจสอบอีเมลของท่าน";
+          } else {
+            showToast(res.message, "error");
+            btn.disabled = false;
+            btn.innerHTML = '<span>ยืนยันการจอง</span>';
+          }
+        })
+        .catch(function(err) {
+          showToast("เกิดข้อผิดพลาดในการเชื่อมต่อระบบหลังบ้าน", "error");
+          btn.disabled = false;
+          btn.innerHTML = '<span>ยืนยันการจอง</span>';
+        });
+    }
+
+    function showToast(msg, type) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "toast " + (type || "");
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3000);
+    }
+  </script>
+</body>
+
+</html>
