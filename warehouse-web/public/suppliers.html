@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ผู้จัดจำหน่าย</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Purchase</strong>
+  <div><a href="/purchase.html">กลับหน้ารายการ PO</a></div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>เพิ่มผู้จัดจำหน่ายใหม่</h1>
+    <label>ชื่อ</label>
+    <input id="name" type="text">
+    <label>ผู้ติดต่อ</label>
+    <input id="contact" type="text">
+    <label>เบอร์โทร</label>
+    <input id="phone" type="text">
+    <label>ที่อยู่</label>
+    <input id="address" type="text">
+    <button onclick="create()">บันทึก</button>
+    <div id="err" class="error"></div>
+  </div>
+  <div class="card">
+    <h2>รายชื่อผู้จัดจำหน่าย</h2>
+    <table id="table"><thead><tr><th>ชื่อ</th><th>ผู้ติดต่อ</th><th>เบอร์โทร</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+async function load() {
+  const data = await api('/suppliers');
+  document.querySelector('#table tbody').innerHTML =
+    data.items.map(s => `<tr><td>${s.name}</td><td>${s.contact_name || '-'}</td><td>${s.phone || '-'}</td></tr>`).join('');
+}
+async function create() {
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const name = document.getElementById('name').value.trim();
+  const contact_name = document.getElementById('contact').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  if (!name) { err.textContent = 'กรอกชื่อผู้จัดจำหน่าย'; return; }
+  try {
+    await api('/suppliers', { method: 'POST', body: JSON.stringify({ name, contact_name, phone, address }) });
+    ['name','contact','phone','address'].forEach(id => document.getElementById(id).value = '');
+    load();
+  } catch (e) { err.textContent = e.message; }
+}
+load();
+</script>
+</body>
+</html>

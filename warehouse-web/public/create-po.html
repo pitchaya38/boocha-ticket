@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>สร้างใบ PO</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Purchase</strong>
+  <div><a href="/purchase.html">กลับหน้ารายการ</a></div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>สร้างใบสั่งซื้อใหม่</h1>
+    <label>ผู้จัดจำหน่าย</label>
+    <select id="supplier"></select>
+    <label>หมายเหตุ</label>
+    <textarea id="note" rows="2"></textarea>
+
+    <h2 style="margin-top:20px;">รายการสินค้า</h2>
+    <div id="items"></div>
+    <button class="secondary" onclick="addItemRow()">+ เพิ่มรายการสินค้า</button>
+
+    <button onclick="submitPO()">สร้างใบ PO</button>
+    <div id="err" class="error"></div>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+let products = [];
+
+function addItemRow() {
+  const div = document.createElement('div');
+  div.className = 'grid-2 item-row';
+  div.style.marginTop = '8px';
+  div.innerHTML = `
+    <select class="prod"></select>
+    <input class="qty" type="number" placeholder="จำนวน" min="0" step="0.01">
+    <input class="price" type="number" placeholder="ราคาต่อหน่วย" min="0" step="0.01">
+    <button class="danger" onclick="this.parentElement.remove()">ลบ</button>
+  `;
+  document.getElementById('items').appendChild(div);
+  const select = div.querySelector('.prod');
+  for (const p of products) {
+    const opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = `${p.name} (${p.sku})`;
+    select.appendChild(opt);
+  }
+}
+
+async function init() {
+  const s = await api('/suppliers');
+  const supplierSelect = document.getElementById('supplier');
+  for (const s2 of s.items) {
+    const opt = document.createElement('option');
+    opt.value = s2.id; opt.textContent = s2.name;
+    supplierSelect.appendChild(opt);
+  }
+  const p = await api('/products');
+  products = p.items;
+  addItemRow();
+}
+
+async function submitPO() {
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const supplier_id = document.getElementById('supplier').value;
+  const note = document.getElementById('note').value;
+  const rows = document.querySelectorAll('.item-row');
+  const items = [];
+  for (const row of rows) {
+    const product_id = row.querySelector('.prod').value;
+    const qty_ordered = parseFloat(row.querySelector('.qty').value);
+    const unit_price = parseFloat(row.querySelector('.price').value);
+    if (!product_id || !qty_ordered || !unit_price) continue;
+    items.push({ product_id, qty_ordered, unit_price });
+  }
+  if (items.length === 0) { err.textContent = 'กรอกรายการสินค้าอย่างน้อย 1 รายการ'; return; }
+  try {
+    const res = await api('/po', { method: 'POST', body: JSON.stringify({ supplier_id, note, items }) });
+    window.location.href = `/po-detail.html?id=${res.id}`;
+  } catch (e) {
+    err.textContent = e.message;
+  }
+}
+init();
+</script>
+</body>
+</html>

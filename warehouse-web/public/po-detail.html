@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>รายละเอียดใบ PO</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Purchase</strong>
+  <div><a href="/purchase.html">กลับหน้ารายการ</a></div>
+</div>
+<div class="container">
+  <div class="card" id="poCard"></div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+const id = new URLSearchParams(window.location.search).get('id');
+
+async function load() {
+  const po = await api(`/po/${id}`);
+  const rowsHtml = po.items.map(it => `
+    <tr>
+      <td>${it.sku}</td><td>${it.product_name}</td>
+      <td>${it.qty_ordered} ${it.unit}</td><td>${it.unit_price.toFixed(2)}</td>
+      <td>${(it.qty_ordered * it.unit_price).toFixed(2)}</td>
+      <td>${it.qty_received}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('poCard').innerHTML = `
+    <h1>ใบ PO: ${po.po_number} <span class="badge ${po.status}">${po.status}</span></h1>
+    <p>ผู้จัดจำหน่าย: ${po.supplier_name} (${po.contact_name || '-'} / ${po.supplier_phone || '-'})</p>
+    <p>หมายเหตุ: ${po.note || '-'}</p>
+    <table>
+      <thead><tr><th>SKU</th><th>สินค้า</th><th>สั่ง</th><th>ราคา/หน่วย</th><th>รวม</th><th>รับแล้ว</th></tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <p><strong>ยอดรวม: ${po.total_amount.toFixed(2)}</strong></p>
+
+    <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button onclick="window.open('/api/po/${id}/pdf','_blank')">ดาวน์โหลด PDF</button>
+      ${po.status === 'รอชำระ' ? `
+        <button onclick="updateStatus('ชำระแล้ว')">มาร์คว่าชำระแล้ว</button>
+        <button class="danger" onclick="updateStatus('ไม่อนุมัติ')">ไม่อนุมัติ</button>
+      ` : ''}
+      ${po.status === 'ชำระแล้ว' ? `<button onclick="window.location.href='/receiving.html?po_id=${id}'">ตรวจรับของ</button>` : ''}
+    </div>
+  `;
+}
+
+async function updateStatus(status) {
+  if (!confirm(`ยืนยันเปลี่ยนสถานะเป็น "${status}" ใช่ไหม`)) return;
+  await api(`/po/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) });
+  load();
+}
+load();
+</script>
+</body>
+</html>

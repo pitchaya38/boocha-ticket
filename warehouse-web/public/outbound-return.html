@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>จ่ายออก / รับคืน</title>
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+<div class="topbar">
+  <strong>Inventory</strong>
+  <div><a href="/inventory.html">กลับหน้าหลัก</a></div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>จ่ายออก / รับคืนสินค้า</h1>
+
+    <label>สาขา</label>
+    <select id="branch"></select>
+
+    <label>ประเภทรายการ</label>
+    <select id="type">
+      <option value="จ่ายออก">จ่ายออก</option>
+      <option value="รับคืน">รับคืน</option>
+    </select>
+
+    <div style="margin-top:14px;">
+      <button onclick="startScan()">สแกนบาร์โค้ด / QR</button>
+      <div id="reader" style="width:320px; margin-top:10px;"></div>
+    </div>
+
+    <div id="itemArea" style="display:none; margin-top:16px;">
+      <p><strong>สินค้า:</strong> <span id="foundProduct"></span></p>
+      <label>เลือก Lot</label>
+      <select id="lotSelect"></select>
+
+      <label id="dateLabel">วันที่</label>
+      <input id="txnDate" type="date">
+
+      <label>ผู้ติดต่อ</label>
+      <input id="contactName" type="text">
+
+      <label>เบอร์ติดต่อ</label>
+      <input id="contactPhone" type="text">
+
+      <label>จำนวน</label>
+      <input id="qty" type="number" min="0" step="0.01">
+
+      <button onclick="openConfirm()">ยืนยันทำรายการ</button>
+    </div>
+    <div id="err" class="error"></div>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2>ยืนยันทำรายการ</h2>
+    <p id="confirmText"></p>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button onclick="submitTxn()">ยืนยัน</button>
+      <button class="secondary" onclick="closeConfirm()">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+let scanner;
+let currentProduct = null;
+let currentLots = [];
+
+async function init() {
+  const b = await api('/branches');
+  document.getElementById('branch').innerHTML = b.items.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+  document.getElementById('type').addEventListener('change', updateDateLabel);
+  updateDateLabel();
+}
+function updateDateLabel() {
+  const type = document.getElementById('type').value;
+  document.getElementById('dateLabel').textContent = type === 'จ่ายออก' ? 'วันที่จ่ายออก' : 'วันที่รับคืน';
+}
+
+function startScan() {
+  document.getElementById('reader').innerHTML = '';
+  scanner = new Html5Qrcode('reader');
+  // supportedScanTypes ปล่อย default ของ lib ซึ่งรองรับทั้ง 1D barcode และ QR code อยู่แล้ว
+  scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 220 }, onScanSuccess, () => {});
+}
+
+async function onScanSuccess(decodedText) {
+  await scanner.stop();
+  document.getElementById('reader').innerHTML = '';
+  await lookupProduct(decodedText);
+}
+
+async function lookupProduct(barcode) {
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const res = await api(`/products?barcode=${encodeURIComponent(barcode)}`);
+  if (!res.items.length) { err.textContent = 'ไม่พบสินค้าจากบาร์โค้ดนี้'; return; }
+  currentProduct = res.items[0];
+
+  const branch_id = document.getElementById('branch').value;
+  const lots = await api(`/lots?branch_id=${branch_id}&product_id=${currentProduct.id}`);
+  currentLots = lots.items;
+  document.getElementById('lotSelect').innerHTML = currentLots
+    .map(l => `<option value="${l.id}">${l.lot_no} (คงเหลือ ${l.qty} ${l.unit})</option>`).join('');
+
+  document.getElementById('foundProduct').textContent = `${currentProduct.name} (${currentProduct.sku})`;
+  document.getElementById('itemArea').style.display = 'block';
+}
+
+function openConfirm() {
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const qty = parseFloat(document.getElementById('qty').value);
+  const txnDate = document.getElementById('txnDate').value;
+  if (!qty || !txnDate || !document.getElementById('lotSelect').value) {
+    err.textContent = 'กรอกวันที่ Lot และจำนวนให้ครบ';
+    return;
+  }
+  const type = document.getElementById('type').value;
+  document.getElementById('confirmText').textContent =
+    `ยืนยัน "${type}" สินค้า ${currentProduct.name} จำนวน ${qty} ${currentProduct.unit} วันที่ ${txnDate} ใช่ไหม`;
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+function closeConfirm() { document.getElementById('confirmModal').style.display = 'none'; }
+
+async function submitTxn() {
+  closeConfirm();
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const body = {
+    type: document.getElementById('type').value,
+    branch_id: document.getElementById('branch').value,
+    lot_id: document.getElementById('lotSelect').value,
+    qty: parseFloat(document.getElementById('qty').value),
+    txn_date: document.getElementById('txnDate').value,
+    contact_name: document.getElementById('contactName').value,
+    contact_phone: document.getElementById('contactPhone').value,
+  };
+  try {
+    const res = await api('/transactions', { method: 'POST', body: JSON.stringify(body) });
+    window.open(`/api/transactions/${res.id}/pdf`, '_blank');
+    window.location.reload();
+  } catch (e) {
+    err.textContent = e.message;
+  }
+}
+init();
+</script>
+</body>
+</html>

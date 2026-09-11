@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Manager - ภาพรวมใบ PO</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Manager</strong>
+  <div><a href="#" onclick="logout()">ออกจากระบบ</a></div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>ภาพรวมใบสั่งซื้อทุกสถานะ</h1>
+    <label>กรองตามสถานะ</label>
+    <select id="filter" onchange="load()">
+      <option value="">ทั้งหมด</option>
+      <option value="รอชำระ">รอชำระ</option>
+      <option value="ชำระแล้ว">ชำระแล้ว</option>
+      <option value="ไม่อนุมัติ">ไม่อนุมัติ</option>
+    </select>
+    <table style="margin-top:14px;">
+      <thead><tr><th>เลขที่ PO</th><th>ผู้จัดจำหน่าย</th><th>ยอดรวม</th><th>สถานะ</th><th>สร้างโดย</th><th></th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+async function load() {
+  const status = document.getElementById('filter').value;
+  const data = await api('/po' + (status ? `?status=${encodeURIComponent(status)}` : ''));
+  document.getElementById('tbody').innerHTML = data.items.map(po => `
+    <tr>
+      <td>${po.po_number}</td><td>${po.supplier_name}</td>
+      <td>${po.total_amount.toFixed(2)}</td>
+      <td><span class="badge ${po.status}">${po.status}</span></td>
+      <td>${po.created_by_name || '-'}</td>
+      <td><a href="/po-detail.html?id=${po.id}">ดู</a></td>
+    </tr>
+  `).join('');
+}
+load();
+</script>
+</body>
+</html>

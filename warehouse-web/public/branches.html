@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>สาขา</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Inventory</strong>
+  <div><a href="/inventory.html">กลับหน้าหลัก</a></div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>สร้างสาขาใหม่</h1>
+    <label>ชื่อสาขา</label>
+    <input id="name" type="text">
+    <label>ที่อยู่</label>
+    <input id="address" type="text">
+    <button onclick="create()">สร้างสาขา</button>
+    <div id="err" class="error"></div>
+  </div>
+  <div class="card">
+    <h2>รายชื่อสาขา</h2>
+    <table id="table"><thead><tr><th>ชื่อ</th><th>ที่อยู่</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+async function load() {
+  const data = await api('/branches');
+  const tbody = document.querySelector('#table tbody');
+  tbody.innerHTML = data.items.map(b => `<tr><td>${b.name}</td><td>${b.address || '-'}</td></tr>`).join('');
+}
+async function create() {
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const name = document.getElementById('name').value.trim();
+  const address = document.getElementById('address').value.trim();
+  if (!name) { err.textContent = 'กรอกชื่อสาขา'; return; }
+  try {
+    await api('/branches', { method: 'POST', body: JSON.stringify({ name, address }) });
+    document.getElementById('name').value = '';
+    document.getElementById('address').value = '';
+    load();
+  } catch (e) { err.textContent = e.message; }
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เข้าสู่ระบบ - ระบบคลังสินค้า Boocha</title>
+<style>
+  :root{
+    --bg:#F2F1EC;
+    --card:#FFFFFF;
+    --border:#E4E1D6;
+    --text:#22261F;
+    --text-muted:#6B6A62;
+    --accent-bg:#EAF3FB;
+    --accent-border:#7FB2E0;
+    --accent-text:#155A96;
+    --code-bg:#F2F1EC;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Sarabun', system-ui, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+  }
+  .login-card{
+    width:100%;
+    max-width:440px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:36px 32px 32px;
+  }
+  .brand{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px;}
+  .brand-mark{display:flex; align-items:baseline; gap:2px; font-weight:700; font-size:20px; letter-spacing:-0.5px;}
+  .brand-mark .b1{color:#D4453E;}
+  .brand-mark .b2{color:#3B7AD8;}
+  .brand-tag{font-size:9px; letter-spacing:1px; color:var(--text-muted); margin-left:4px; font-weight:400;}
+  .eyebrow{
+    font-size:11px; letter-spacing:1.5px; color:var(--text-muted);
+    text-transform:uppercase; margin:0 0 6px;
+  }
+  h1{font-size:24px; margin:0 0 6px; font-weight:600;}
+  .subtitle{font-size:13.5px; color:var(--text-muted); margin:0 0 24px;}
+  .field-label{font-size:13px; color:var(--text-muted); margin:0 0 8px; display:block;}
+  .role-list{display:flex; flex-direction:column; gap:10px; margin-bottom:24px;}
+  .role-card{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:13px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    background:#fff;
+  }
+  .role-card:hover{border-color:var(--accent-border);}
+  .role-card.selected{background:var(--accent-bg); border-color:var(--accent-border);}
+  .role-card .role-title{font-size:14.5px; font-weight:600; margin:0 0 3px;}
+  .role-card.selected .role-title{color:var(--accent-text);}
+  .role-card .role-desc{font-size:12px; color:var(--text-muted);}
+  .role-code{
+    font-size:11px; font-weight:600; color:var(--text-muted);
+    background:var(--code-bg); border-radius:6px; padding:3px 8px;
+  }
+  .role-card.selected .role-code{color:var(--accent-text); background:#DCEBF8;}
+  input[type="text"], input[type="password"]{
+    width:100%; padding:11px 13px; border:1px solid var(--border);
+    border-radius:8px; font-size:14px; margin-bottom:16px; font-family:inherit;
+  }
+  input:focus{outline:2px solid var(--accent-border); outline-offset:1px; border-color:var(--accent-border);}
+  .remember{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-muted); margin-bottom:20px;}
+  .remember input{width:auto; margin:0;}
+  button.submit{
+    width:100%; background:var(--text); color:#fff; border:none;
+    padding:13px; border-radius:8px; font-size:14.5px; font-weight:600;
+    cursor:pointer; font-family:inherit;
+  }
+  button.submit:hover{opacity:0.9;}
+  .error{color:#A32D2D; font-size:13px; margin-top:12px; text-align:center;}
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="brand">
+    <div class="brand-mark">
+      <span class="b1">boo</span><span class="b2">cha</span>
+      <span class="brand-tag">FRUIT SODA</span>
+    </div>
+  </div>
+
+  <p class="eyebrow">Warehouse management</p>
+  <h1>เข้าสู่ระบบคลัง</h1>
+  <p class="subtitle">เลือกตำแหน่งของคุณเพื่อเข้าหน้าหลัก</p>
+
+  <span class="field-label">ตำแหน่ง</span>
+  <div class="role-list" id="roleList">
+    <div class="role-card selected" data-role="purchase">
+      <div>
+        <div class="role-title">Purchase / จัดซื้อ</div>
+        <div class="role-desc">ออกใบ PO · PDF · อัพเดตสถานะ</div>
+      </div>
+      <span class="role-code">PO</span>
+    </div>
+    <div class="role-card" data-role="inventory">
+      <div>
+        <div class="role-title">Inventory / คลัง</div>
+        <div class="role-desc">ตรวจรับ · สแกน · ล็อต · โซน</div>
+      </div>
+      <span class="role-code">WH</span>
+    </div>
+    <div class="role-card" data-role="manager">
+      <div>
+        <div class="role-title">Manager / ผู้อนุมัติ</div>
+        <div class="role-desc">ดูภาพรวม · ตรวจสอบ PO</div>
+      </div>
+      <span class="role-code">MGR</span>
+    </div>
+  </div>
+
+  <span class="field-label">ชื่อผู้ใช้</span>
+  <input id="username" type="text" placeholder="เช่น somchai.p">
+
+  <span class="field-label">รหัสผ่าน</span>
+  <input id="password" type="password" placeholder="รหัสผ่าน">
+
+  <label class="remember">
+    <input type="checkbox" id="rememberMe">
+    จำการเข้าสู่ระบบบนเครื่องนี้
+  </label>
+
+  <button class="submit" onclick="doLogin()">เข้าสู่ระบบ</button>
+  <div id="err" class="error"></div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+let selectedRole = 'purchase';
+document.querySelectorAll('.role-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedRole = card.dataset.role;
+  });
+});
+
+async function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const err = document.getElementById('err');
+  err.textContent = '';
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.error; return; }
+
+    if (data.user.role !== selectedRole) {
+      err.textContent = `บัญชีนี้เป็นตำแหน่ง "${data.user.role}" ไม่ตรงกับที่เลือกไว้ (${selectedRole})`;
+      return;
+    }
+
+    if (document.getElementById('rememberMe').checked) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    } else {
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+    }
+
+    if (data.user.role === 'purchase') window.location.href = '/purchase.html';
+    else if (data.user.role === 'inventory') window.location.href = '/inventory.html';
+    else window.location.href = '/manager.html';
+  } catch (e) {
+    err.textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';
+  }
+}
+</script>
+</body>
+</html>

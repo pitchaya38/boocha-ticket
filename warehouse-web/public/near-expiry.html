@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>สินค้าใกล้หมดอายุ</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Inventory</strong>
+  <div><a href="/inventory.html">กลับหน้าหลัก</a></div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>สินค้าใกล้หมดอายุ</h1>
+    <label>เตือนล่วงหน้า (วัน)</label>
+    <input id="days" type="number" value="30" style="max-width:120px; display:inline-block;">
+    <button onclick="load()">ค้นหา</button>
+    <table style="margin-top:14px;">
+      <thead><tr><th>สาขา</th><th>สินค้า</th><th>Lot</th><th>คงเหลือ</th><th>วันหมดอายุ</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+async function load() {
+  const days = document.getElementById('days').value || 30;
+  const data = await api(`/lots?near_expiry_days=${days}`);
+  document.getElementById('tbody').innerHTML = data.items.map(l => `
+    <tr>
+      <td>${l.branch_name}</td>
+      <td>${l.product_name} (${l.sku})</td>
+      <td>${l.lot_no}</td>
+      <td>${l.qty} ${l.unit}</td>
+      <td>${l.expiry_date}</td>
+    </tr>
+  `).join('');
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+* { box-sizing: border-box; }
+body {
+  font-family: 'Sarabun', system-ui, sans-serif;
+  background: #F5F6F5;
+  margin: 0;
+  color: #1F2421;
+}
+.topbar {
+  background: #0F6E56;
+  color: #fff;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.topbar a { color: #fff; text-decoration: none; margin-left: 16px; font-size: 14px; }
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+h1 { font-size: 20px; margin: 0 0 16px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+label { display: block; font-size: 13px; margin: 10px 0 4px; color: #444; }
+input, select, textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #D3D1C7;
+  border-radius: 6px;
+  font-size: 14px;
+}
+button {
+  background: #0F6E56;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 14px;
+}
+button.secondary { background: #888780; }
+button.danger { background: #A32D2D; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+.badge { padding: 3px 8px; border-radius: 12px; font-size: 12px; }
+.badge.รอชำระ { background: #FAC775; color: #633806; }
+.badge.ชำระแล้ว { background: #97C459; color: #173404; }
+.badge.ไม่อนุมัติ { background: #F09595; color: #501313; }
+.error { color: #A32D2D; font-size: 13px; margin-top: 8px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+}
+.modal-box { background: #fff; border-radius: 10px; padding: 24px; width: 320px; }

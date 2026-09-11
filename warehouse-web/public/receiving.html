@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ตรวจรับของตามใบ PO</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Inventory</strong>
+  <div><a href="/inventory.html">กลับหน้าหลัก</a></div>
+</div>
+<div class="container">
+  <div class="card" id="card"></div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+const poId = new URLSearchParams(window.location.search).get('po_id');
+let branches = [];
+
+async function init() {
+  const po = await api(`/po/${poId}`);
+  const b = await api('/branches');
+  branches = b.items;
+
+  const branchOptions = branches.map(br => `<option value="${br.id}">${br.name}</option>`).join('');
+  const rows = po.items.map(it => `
+    <tr data-po-item="${it.id}" data-product="${it.product_id}">
+      <td>${it.sku} - ${it.product_name}</td>
+      <td>${it.qty_ordered} ${it.unit}</td>
+      <td><input class="qty-recv" type="number" min="0" step="0.01" placeholder="จำนวนที่รับจริง"></td>
+      <td><input class="lot-no" type="text" placeholder="เลข Lot"></td>
+      <td><input class="received-date" type="date"></td>
+      <td><input class="expiry-date" type="date"></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('card').innerHTML = `
+    <h1>ตรวจรับของ - ${po.po_number}</h1>
+    <label>สาขาที่รับเข้า</label>
+    <select id="branch">${branchOptions}</select>
+    <table style="margin-top:12px;">
+      <thead><tr><th>สินค้า</th><th>สั่ง</th><th>รับจริง</th><th>Lot</th><th>วันที่รับ</th><th>วันหมดอายุ</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <button onclick="submitReceive()">บันทึกการตรวจรับ</button>
+    <div id="err" class="error"></div>
+  `;
+}
+
+async function submitReceive() {
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const branch_id = document.getElementById('branch').value;
+  const items = [];
+  document.querySelectorAll('tr[data-po-item]').forEach(tr => {
+    const qty_received = parseFloat(tr.querySelector('.qty-recv').value);
+    const lot_no = tr.querySelector('.lot-no').value;
+    const received_date = tr.querySelector('.received-date').value;
+    const expiry_date = tr.querySelector('.expiry-date').value;
+    if (qty_received && lot_no && received_date) {
+      items.push({
+        po_item_id: tr.dataset.poItem,
+        product_id: tr.dataset.product,
+        qty_received, lot_no, received_date, expiry_date,
+      });
+    }
+  });
+  if (items.length === 0) { err.textContent = 'กรอกจำนวนรับจริง, Lot และวันที่รับอย่างน้อย 1 รายการ'; return; }
+  if (!confirm('ยืนยันบันทึกการตรวจรับใช่ไหม')) return;
+  try {
+    await api(`/po/${poId}/receive`, { method: 'POST', body: JSON.stringify({ branch_id, items }) });
+    window.location.href = `/po-detail.html?id=${poId}`;
+  } catch (e) {
+    err.textContent = e.message;
+  }
+}
+init();
+</script>
+</body>
+</html>

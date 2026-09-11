@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Inventory - หน้าหลัก</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Inventory</strong>
+  <div>
+    <a href="/inventory.html">หน้าหลัก</a>
+    <a href="/branches.html">สาขา</a>
+    <a href="/zones.html">โซนสินค้า</a>
+    <a href="/near-expiry.html">ใกล้หมดอายุ</a>
+    <a href="/outbound-return.html">จ่ายออก/รับคืน</a>
+    <a href="#" onclick="logout()">ออกจากระบบ</a>
+  </div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>สรุปภาพรวมคลัง</h1>
+    <div class="grid-2" id="summary"></div>
+  </div>
+  <div class="card">
+    <h2>ใบ PO ที่ชำระแล้ว รอตรวจรับ</h2>
+    <table id="poTable">
+      <thead><tr><th>เลขที่ PO</th><th>ผู้จัดจำหน่าย</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+async function load() {
+  const near = await api('/lots?near_expiry_days=30');
+  document.getElementById('summary').innerHTML = `
+    <div class="card" style="margin:0;"><h2>Lot ใกล้หมดอายุ (30 วัน)</h2><p style="font-size:24px;">${near.items.length}</p></div>
+  `;
+
+  const pos = await api('/po?status=ชำระแล้ว');
+  const tbody = document.querySelector('#poTable tbody');
+  tbody.innerHTML = '';
+  for (const po of pos.items) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${po.po_number}</td><td>${po.supplier_name}</td>
+      <td><a href="/receiving.html?po_id=${po.id}">ตรวจรับของ</a></td>`;
+    tbody.appendChild(tr);
+  }
+}
+load();
+</script>
+</body>
+</html>

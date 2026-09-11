@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Purchase - ใบสั่งซื้อ</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="topbar">
+  <strong>Purchase</strong>
+  <div>
+    <a href="/purchase.html">ใบ PO</a>
+    <a href="/suppliers.html">ผู้จัดจำหน่าย</a>
+    <a href="#" onclick="logout()">ออกจากระบบ</a>
+  </div>
+</div>
+<div class="container">
+  <div class="card">
+    <h1>รายการใบสั่งซื้อ (PO)</h1>
+    <button onclick="window.location.href='/create-po.html'">+ สร้างใบ PO ใหม่</button>
+    <div style="margin-top:16px;">
+      <table id="poTable">
+        <thead>
+          <tr><th>เลขที่ PO</th><th>ผู้จัดจำหน่าย</th><th>ยอดรวม</th><th>สถานะ</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+requireLogin();
+async function loadPOs() {
+  const data = await api('/po');
+  const tbody = document.querySelector('#poTable tbody');
+  tbody.innerHTML = '';
+  for (const po of data.items) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${po.po_number}</td>
+      <td>${po.supplier_name}</td>
+      <td>${po.total_amount.toFixed(2)}</td>
+      <td><span class="badge ${po.status}">${po.status}</span></td>
+      <td><a href="/po-detail.html?id=${po.id}">ดูรายละเอียด</a></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+loadPOs();
+</script>
+</body>
+</html>
